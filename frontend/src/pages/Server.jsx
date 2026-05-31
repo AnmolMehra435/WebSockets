@@ -1,13 +1,31 @@
 import { useNavigate } from "react-router-dom"
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import axios from 'axios'
 
 function Server(){
     const navigate = useNavigate();
-    const [msg, setMsg] = useState(["hello", "world"]);
+    const [msg, setMsg] = useState([]);
 
     const back = () => {
         navigate('/')
     }
+
+    useEffect(() => {
+        const getMessages = async () => {
+            try{
+                const response = await axios.get(
+                    'http://localhost:5000/auth/message/getmessage'
+                )
+
+                setMsg(response.data.messages)
+
+            }catch(err){
+                console.log(err.message);
+            }
+        }
+
+        getMessages();
+    }, []);
 
     return (
         <div className="container bg-blue-400 h-screen max-w-full flex justify-center items-center">
@@ -17,7 +35,7 @@ function Server(){
                     <div className="messages">
                         {
                             msg.map((message, idx) => (
-                                <li className='text-lg text-black-300 list-none' key={idx}>{message}</li>
+                                <li className='text-lg text-black-300 list-none' key={idx}>{message.message} {message.createdAt.split('T')[1].split('.')[0]}</li>
                             ))
                         }
                     </div>

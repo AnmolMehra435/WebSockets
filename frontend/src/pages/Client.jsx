@@ -1,5 +1,6 @@
 import { useNavigate } from "react-router-dom"
 import { useState } from "react";
+import axios from 'axios'
 
 function Client(){
     const navigate = useNavigate();
@@ -9,8 +10,20 @@ function Client(){
         navigate('/')
     }
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
+
+        try{
+            await axios.post(
+                'http://localhost:5000/auth/message/sendmessage',
+                {
+                    message: msg
+                }
+            )
+            setMsg('');
+        }catch(err){
+            console.log(err.message)
+        }
 
     }
 
