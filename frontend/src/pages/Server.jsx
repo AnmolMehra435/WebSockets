@@ -1,14 +1,24 @@
 import { useNavigate } from "react-router-dom"
 import { useState, useEffect } from "react";
 import axios from 'axios'
-
+import { io } from 'socket.io-client'
+const socket = io('http://localhost:5000')
 function Server(){
     const navigate = useNavigate();
     const [msg, setMsg] = useState([]);
-
     const back = () => {
         navigate('/')
     }
+
+    useEffect(() => {
+        socket.on('receive-message', (msg) => {
+            setMsg(prev => [...prev, msg])
+        });
+
+        return () => {
+            socket.off('receive-message');
+        }
+    }, [])
 
     useEffect(() => {
         const getMessages = async () => {
@@ -35,7 +45,7 @@ function Server(){
                     <div className="messages">
                         {
                             msg.map((message, idx) => (
-                                <li className='text-lg text-black-300 list-none' key={idx}>{message.message} {message.createdAt.split('T')[1].split('.')[0]}</li>
+                                <li className='text-lg text-black-300 list-none' key={idx}>{message.message} {message.createdAt?.split('T')[1].split('.')[0]}</li>
                             ))
                         }
                     </div>
